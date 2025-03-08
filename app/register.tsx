@@ -4,7 +4,6 @@ export default function RegisterScreen() {
     return (
         <View style={styles.container}>
             <Text>This is the user registration screen</Text>
-            {/* <Link href="/details">View details</Link> */}
         </View>
     );
 }
