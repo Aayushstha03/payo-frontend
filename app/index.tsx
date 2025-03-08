@@ -1,10 +1,11 @@
 import { Link } from "expo-router";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
+import { Text } from "~/components/ui/text";
 import { Button } from "~/components/ui/button";
 
 export default function LogInScreen() {
   return (
-    <View style={styles.container}>
+    <View style={styles.container} className="bg-background text-primary">
       <Text>This is the login page</Text>
       <Link href="/register">Register new user {"\n"}</Link>
       <Button
@@ -14,8 +15,10 @@ export default function LogInScreen() {
         <Text>Login</Text>
       </Button>
       <Link href="/home">
-        This is the homepage after successful login, pachi private authenticated
-        link banaunu parcha
+        <Text>
+          This is the homepage after successful login, pachi private
+          authenticated link banaunu parcha
+        </Text>
       </Link>
     </View>
   );
