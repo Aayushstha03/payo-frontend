@@ -1,10 +1,12 @@
+import { Link } from 'expo-router';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function ProfilePage() {
+export default function HomeScreen() {
     return (
         <View style={styles.container}>
-            <Text>This is the user profile page</Text>
-            {/* <Link href="/details">View details</Link> */}
+            <Text>Home</Text>
+            <Link href="/profile">View Profile page</Link>
+            <Link href="/settings">View Settings page</Link>
         </View>
     );
 }
