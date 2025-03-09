@@ -7,6 +7,22 @@ module.exports = {
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
+      spacing: {
+        xs: "4px",
+        sm: "8px",
+        md: "16px",
+        lg: "24px",
+        xl: "32px",
+        "2xl": "48px",
+        "3xl": "64px",
+        "4xl": "80px",
+        "5xl": "96px",
+        "6xl": "112px",
+        "7xl": "128px",
+        "8xl": "144px",
+        "9xl": "160px",
+        "10xl": "176px",
+      },
       colors: {
         border: "var(--border)",
         input: "var(--input)",
