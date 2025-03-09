@@ -1,6 +1,6 @@
 import { Link } from 'expo-router';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { Card, CardContent, CardDescription, CardTitle } from "components/ui/card"
+import { View, Text, ScrollView } from 'react-native';
+import { Card, CardDescription, CardTitle } from "components/ui/card"
 import { Button } from '~/components/ui/button';
 import Feather from '@expo/vector-icons/Feather'
 import MaterialIcon from '@expo/vector-icons/MaterialCommunityIcons'
@@ -36,9 +36,9 @@ export default function HomeScreen() {
                 <View className="space-y-md">
                     <Text className="text-xl font-bold text-primary">Recent Transactions</Text>
                     {[
-                        { title: "HotWheels", amount: "-$9.99", color: "text-red-500" },
-                        { title: "Pepe Pizza", amount: "-$4.50", color: "text-red-500" },
-                        { title: "Load Wallet", amount: "+$200.00", color: "text-green-500" },
+                        { title: "HotWheels", amount: "-$9.99", color: "text-red-400" },
+                        { title: "Pepe Pizza", amount: "-$4.50", color: "text-red-400" },
+                        { title: "Load Wallet", amount: "+$200.00", color: "text-green-400" },
                     ].map((item, index) => (
                         <Card key={index} className="p-md flex-row justify-between items-center bg-card rounded-lg">
                             <Text className="text-lg text-primary">{item.title}</Text>
