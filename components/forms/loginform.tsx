@@ -4,12 +4,10 @@ import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 
-const RegistrationForm = () => {
+const LoginForm = () => {
   const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
     username: "",
-    email: "",
+
     password: "",
   });
 
@@ -18,34 +16,15 @@ const RegistrationForm = () => {
   };
 
   const handleSubmit = () => {
-    console.log("Registering user:", form);
+    console.log("Log in user:", form);
   };
 
   return (
     <View className="flex flex-col gap-sm items-center  bg-background text-primary w-full px-sm">
       <Text className="text-3xl font-bold text-primary mb-xl text-center">
-        Register
+        Log In
       </Text>
-      <View className="flex flex-row gap-sm w-full">
-        <View className="flex-1">
-          <Text className="text-sm  mb-xs">First Name</Text>
-          <Input
-            placeholder="Enter your first name"
-            value={form.firstName}
-            onChangeText={(value) => handleChange("firstName", value)}
-            className="mb-md max-w-full"
-          />
-        </View>
-        <View className="flex-1">
-          <Text className="text-sm  mb-xs">Last Name</Text>
-          <Input
-            placeholder="Enter your last name"
-            value={form.lastName}
-            onChangeText={(value) => handleChange("lastName", value)}
-            className="mb-md max-w-full"
-          />
-        </View>
-      </View>
+
       <View className="w-full">
         <Text className="text-sm  mb-xs">Username</Text>
         <Input
@@ -55,16 +34,7 @@ const RegistrationForm = () => {
           className="mb-md"
         />
       </View>
-      <View className="w-full">
-        <Text className="text-sm  mb-xs">Email</Text>
-        <Input
-          placeholder="Enter your email"
-          value={form.email}
-          onChangeText={(value) => handleChange("email", value)}
-          keyboardType="email-address"
-          className="mb-md"
-        />
-      </View>
+
       <View className="w-full">
         <Text className="text-sm  mb-xs">Password</Text>
         <Input
@@ -80,11 +50,11 @@ const RegistrationForm = () => {
           onPress={handleSubmit}
           className="mt-md w-full bg-primary text-background  py-lg rounded-lg"
         >
-          <Text className="text-lg font-semibold">Register</Text>
+          <Text className="text-lg font-semibold">Log In</Text>
         </Button>
       </View>
     </View>
   );
 };
 
-export default RegistrationForm;
+export default LoginForm;
