@@ -14,7 +14,7 @@ export default function RegisterScreen() {
 
       <View className="pb-md">
         <Text>Already have an account?{" \n"}</Text>
-        <Link href="./index" className="mt-xs text-center ">
+        <Link href="./" className="mt-xs text-center ">
           <Text className="text-xl font-bold ">Log in</Text>
         </Link>
       </View>
