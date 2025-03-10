@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, ScrollView, TextInput, Modal, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, TextInput, Modal, StyleSheet, TouchableOpacity } from 'react-native';
 import { Link } from 'expo-router';
 import { Card, CardDescription, CardTitle } from "components/ui/card";
 import { Button } from '~/components/ui/button';
@@ -12,6 +12,7 @@ import CryptoJS from 'crypto-js';
 export default function HomeScreen() {
     const username = "JohnDoe"; // Replace with actual username from user state
     const [balance, setBalance] = useState(123456);
+    const [balanceVisible, setBalanceVisible] = useState(false); // State for balance visibility
     const [transferModalVisible, setTransferModalVisible] = useState(false);
     const [qrModalVisible, setQrModalVisible] = useState(false);
     const [transferAmount, setTransferAmount] = useState('');
@@ -51,7 +52,7 @@ export default function HomeScreen() {
     };
 
     return (
-        <View className="flex-1 bg-background px-md">
+        <View className="flex-1 bg-background p-md">
             {/* Scrollable Content */}
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
                 {/* Header Section */}
@@ -67,10 +68,18 @@ export default function HomeScreen() {
                             </Link>
                             <CardTitle>Hi, {username}</CardTitle>
                         </View>
-                        <Feather name="eye" size={20} color="white" />
+                        {/* Eye icon to toggle balance visibility */}
+                        <TouchableOpacity onPress={() => setBalanceVisible(prevState => !prevState)}>
+                            <Feather name="eye" size={20} color="white" />
+                        </TouchableOpacity>
                     </View>
                     <CardDescription>Current Balance</CardDescription>
-                    <Text className='text-primary text-2xl'>${balance.toLocaleString()}</Text>
+                    {/* Conditionally render balance based on visibility */}
+                    {balanceVisible ? (
+                        <Text className='text-primary text-2xl'>${balance.toLocaleString()}</Text>
+                    ) : (
+                        <Text className='text-primary text-2xl'>******</Text>
+                    )}
                 </Card>
 
                 <View className="my-md" />
@@ -85,7 +94,11 @@ export default function HomeScreen() {
                     ].map((item, index) => (
                         <Card key={index} className="p-md flex-row justify-between items-center bg-card rounded-lg">
                             <Text className="text-lg text-primary">{item.title}</Text>
-                            <Text className={`text-lg font-bold ${item.color}`}>{item.amount}</Text>
+                            <TouchableOpacity onPress={() => setBalanceVisible(prevState => !prevState)}>
+                                <Text className={`text-lg font-bold ${item.color}`}>
+                                    {balanceVisible ? item.amount : '***'}
+                                </Text>
+                            </TouchableOpacity>
                         </Card>
                     ))}
                 </View>
