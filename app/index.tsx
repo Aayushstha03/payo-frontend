@@ -1,7 +1,9 @@
 import { Link } from "expo-router";
 import { View, StyleSheet } from "react-native";
+
 import Doodle from "~/components/Doodle";
 import LoginForm from "~/components/forms/loginform";
+
 import { Text } from "~/components/ui/text";
 
 export default function RegisterScreen() {

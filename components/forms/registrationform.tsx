@@ -3,6 +3,8 @@ import { View } from "react-native";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
+import { secureStoreGet, secureStoreSet } from "~/lib/utils";
+import { router } from "expo-router";
 
 const RegistrationForm = () => {
   const [form, setForm] = useState({
@@ -13,72 +15,168 @@ const RegistrationForm = () => {
     password: "",
   });
 
-  const handleChange = (name: keyof typeof form, value: String | Number) => {
+  const [errors, setErrors] = useState({
+    firstName: "",
+    lastName: "",
+    username: "",
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (name: keyof typeof form, value: string) => {
     setForm({ ...form, [name]: value });
+    setErrors({ ...errors, [name]: "" }); // Clear errors when user types
   };
 
-  const handleSubmit = () => {
-    console.log("Registering user:", form);
+  const validateForm = () => {
+    let valid = true;
+    let newErrors = {
+      firstName: "",
+      lastName: "",
+      username: "",
+      email: "",
+      password: "",
+    };
+
+    if (!form.firstName.trim() || form.firstName.length < 2) {
+      newErrors.firstName = "First name must be at least 2 characters";
+      valid = false;
+    }
+
+    if (!form.lastName.trim() || form.lastName.length < 2) {
+      newErrors.lastName = "Last name must be at least 2 characters";
+      valid = false;
+    }
+
+    if (!form.username.trim() || form.username.length < 4) {
+      newErrors.username = "Username must be at least 4 characters";
+      valid = false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!form.email.trim() || !emailRegex.test(form.email)) {
+      newErrors.email = "Enter a valid email address";
+      valid = false;
+    }
+
+    if (!form.password.trim() || form.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    return valid;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      console.log("Form validation failed:", errors);
+      return;
+    }
+
+    console.log("Submitting form:", form);
+
+    try {
+      const response = await fetch("http://192.168.1.9:3000/create-user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await response.json();
+      console.log("Registering user:", data);
+      if (data?.seed) {
+        await secureStoreSet("seed", data.seed);
+        console.log("Seed stored in secure store");
+        router.replace("./");
+      } else {
+        throw {};
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
   };
 
   return (
-    <View className="flex flex-col gap-sm items-center  bg-background text-primary w-full px-sm">
+    <View className="flex flex-col gap-sm items-center bg-background text-primary w-full px-sm">
       <Text className="text-3xl font-bold text-primary mb-xl text-center">
         Register
       </Text>
+
       <View className="flex flex-row gap-sm w-full">
         <View className="flex-1">
-          <Text className="text-sm  mb-xs">First Name</Text>
+          <Text className="text-sm mb-xs">First Name</Text>
           <Input
             placeholder="Enter your first name"
             value={form.firstName}
             onChangeText={(value) => handleChange("firstName", value)}
-            className="mb-md max-w-full"
+            className="mb-xs max-w-full"
           />
+          {errors.firstName ? (
+            <Text className="text-red-500 text-xs">{errors.firstName}</Text>
+          ) : null}
         </View>
         <View className="flex-1">
-          <Text className="text-sm  mb-xs">Last Name</Text>
+          <Text className="text-sm mb-xs">Last Name</Text>
           <Input
             placeholder="Enter your last name"
             value={form.lastName}
             onChangeText={(value) => handleChange("lastName", value)}
-            className="mb-md max-w-full"
+            className="mb-xs max-w-full"
           />
+          {errors.lastName ? (
+            <Text className="text-red-500 text-xs">{errors.lastName}</Text>
+          ) : null}
         </View>
       </View>
+
       <View className="w-full">
-        <Text className="text-sm  mb-xs">Username</Text>
+        <Text className="text-sm mb-xs">Username</Text>
         <Input
           placeholder="Choose a username"
           value={form.username}
           onChangeText={(value) => handleChange("username", value)}
-          className="mb-md"
+          className="mb-xs"
         />
+        {errors.username ? (
+          <Text className="text-red-500 text-xs">{errors.username}</Text>
+        ) : null}
       </View>
+
       <View className="w-full">
-        <Text className="text-sm  mb-xs">Email</Text>
+        <Text className="text-sm mb-xs">Email</Text>
         <Input
           placeholder="Enter your email"
           value={form.email}
           onChangeText={(value) => handleChange("email", value)}
           keyboardType="email-address"
-          className="mb-md"
+          className="mb-xs"
         />
+        {errors.email ? (
+          <Text className="text-red-500 text-xs">{errors.email}</Text>
+        ) : null}
       </View>
+
       <View className="w-full">
-        <Text className="text-sm  mb-xs">Password</Text>
+        <Text className="text-sm mb-xs">Password</Text>
         <Input
           placeholder="Enter your password"
           value={form.password}
           onChangeText={(value) => handleChange("password", value)}
           secureTextEntry
-          className="mb-md"
+          className="mb-xs"
         />
+        {errors.password ? (
+          <Text className="text-red-500 text-xs">{errors.password}</Text>
+        ) : null}
       </View>
+
       <View className="w-full">
         <Button
           onPress={handleSubmit}
-          className="mt-md w-full bg-primary text-background  py-lg rounded-lg"
+          className="mt-md w-full bg-primary text-background py-lg rounded-lg"
         >
           <Text className="text-lg font-semibold">Register</Text>
         </Button>
