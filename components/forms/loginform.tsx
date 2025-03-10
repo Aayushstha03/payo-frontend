@@ -61,7 +61,7 @@ const LoginForm = () => {
     console.log("Submitting form:", form);
 
     try {
-      const response = await fetch("http://192.168.1.9:3000/login", {
+      const response = await fetch(`${base_api}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -72,9 +72,11 @@ const LoginForm = () => {
       const data = await response.json();
       console.log("Logging in user:", data);
       if (data?.jwt) {
-        await secureStoreSet("jwt", data.jwt);
-        console.log(await secureStoreGet("jwt"));
-        console.log("JWT stored in secure store");
+        try {
+          await secureStoreSet("jwt", data.jwt);
+
+          console.log("JWT stored in secure store");
+        } catch {}
         router.replace("./home");
       } else {
         setErrors({ ...errors, form: data.error });
