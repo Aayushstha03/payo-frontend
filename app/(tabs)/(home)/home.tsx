@@ -6,12 +6,27 @@ import { Button } from '~/components/ui/button';
 import Feather from '@expo/vector-icons/Feather';
 import MaterialIcon from '@expo/vector-icons/MaterialCommunityIcons';
 import { Avatar, AvatarFallback } from '~/components/ui/avatar';
+import QRCode from 'react-native-qrcode-svg';
+import CryptoJS from 'crypto-js';
 
 export default function HomeScreen() {
+    const username = "JohnDoe"; // Replace with actual username from user state
     const [balance, setBalance] = useState(123456);
-    const [modalVisible, setModalVisible] = useState(false);
+    const [transferModalVisible, setTransferModalVisible] = useState(false);
+    const [qrModalVisible, setQrModalVisible] = useState(false);
     const [transferAmount, setTransferAmount] = useState('');
     const [error, setError] = useState('');
+    const [qrData, setQrData] = useState('');
+
+    // Function to generate the transaction QR code
+    const generateTransactionQR = (amount: number) => {
+        const timestamp = Date.now();
+
+        const transactionData = { username, amount, timestamp, currentBalance: balance };
+        const transactionHash = CryptoJS.SHA256(JSON.stringify(transactionData)).toString();
+
+        return JSON.stringify({ ...transactionData, transactionHash });
+    };
 
     const handleTransfer = () => {
         const amount = parseFloat(transferAmount);
@@ -27,9 +42,12 @@ export default function HomeScreen() {
         }
 
         setBalance(balance - amount);
-        setModalVisible(false);
+        setTransferModalVisible(false); // Close the first modal
+        setQrData(generateTransactionQR(amount)); // Generate QR Code
+        setTimeout(() => setQrModalVisible(true), 300); // Open QR modal after a slight delay
+
         setTransferAmount('');
-        setError(''); // Clear error on success
+        setError('');
     };
 
     return (
@@ -47,7 +65,7 @@ export default function HomeScreen() {
                                     </AvatarFallback>
                                 </Avatar>
                             </Link>
-                            <CardTitle>Hi, $Username</CardTitle>
+                            <CardTitle>Hi, {username}</CardTitle>
                         </View>
                         <Feather name="eye" size={20} color="white" />
                     </View>
@@ -82,7 +100,7 @@ export default function HomeScreen() {
                 <Button
                     size={"lg"}
                     className="flex-1 flex-row items-center bg-yellow-300"
-                    onPress={() => setModalVisible(true)}
+                    onPress={() => setTransferModalVisible(true)}
                 >
                     <MaterialIcon name="qrcode-scan" size={24} color="black" />
                     <Text className="text-lg ml-sm">Send</Text>
@@ -90,11 +108,11 @@ export default function HomeScreen() {
             </View>
 
             {/* Transfer Modal */}
-            <Modal visible={modalVisible} animationType="slide" transparent>
+            <Modal visible={transferModalVisible} animationType="slide" transparent>
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Transfer Money</Text>
-                        <Text style={styles.balanceText}>Current Balance: ${balance.toLocaleString()}</Text>
+                        <Text style={styles.modalTitle}>Enter Amount</Text>
+                        <Text style={styles.balanceText}>Balance: ${balance.toLocaleString()}</Text>
                         <TextInput
                             style={styles.input}
                             placeholder="Enter amount"
@@ -102,18 +120,31 @@ export default function HomeScreen() {
                             value={transferAmount}
                             onChangeText={(text) => {
                                 setTransferAmount(text);
-                                setError(''); // Clear error when user types
+                                setError('');
                             }}
                         />
                         {error ? <Text style={styles.errorText}>{error}</Text> : null}
                         <View style={styles.buttonContainer}>
-                            <Button className="bg-red-300 flex-1 mr-2" onPress={() => setModalVisible(false)}>
+                            <Button className="bg-red-300 flex-1 mr-2" onPress={() => setTransferModalVisible(false)}>
                                 <Text>Cancel</Text>
                             </Button>
                             <Button className="bg-green-300 flex-1" onPress={handleTransfer}>
-                                <Text>Transfer</Text>
+                                <Text>Generate QR</Text>
                             </Button>
                         </View>
+                    </View>
+                </View>
+            </Modal>
+
+            {/* QR Code Modal */}
+            <Modal visible={qrModalVisible} animationType="slide" transparent>
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Scan to Receive</Text>
+                        {qrData ? <QRCode value={qrData} size={200} /> : null}
+                        <Button className="bg-red-300 mt-md" onPress={() => setQrModalVisible(false)}>
+                            <Text>Close</Text>
+                        </Button>
                     </View>
                 </View>
             </Modal>
@@ -139,7 +170,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 10,
-        color: 'white'
+        color: 'white',
     },
     balanceText: {
         fontSize: 16,
@@ -155,7 +186,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         marginBottom: 5,
         color: 'white',
-
     },
     errorText: {
         color: 'red',
