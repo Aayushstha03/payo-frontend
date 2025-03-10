@@ -77,10 +77,9 @@ const LoginForm = () => {
         console.log("JWT stored in secure store");
         router.replace("./home");
       } else {
-        throw { data: data.error };
+        setErrors({ ...errors, form: data.error });
       }
     } catch (error: any) {
-      setErrors({ ...errors, form: error.data });
       console.error("Error submitting form:", error);
     }
   };
