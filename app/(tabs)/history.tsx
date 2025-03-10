@@ -28,7 +28,8 @@ export default function TransactionHistory() {
     };
 
     return (
-        <View className="flex-1 bg-background px-md">
+        <View className="flex-1 bg-background p-md">
+            <Text className="text-2xl font-bold text-center my-md">Transaction History</Text>
             {/* Date Selection Buttons */}
             <View className="flex-row justify-between my-md">
                 <Button
