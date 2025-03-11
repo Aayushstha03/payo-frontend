@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { Link } from "expo-router";
+import { Link, useFocusEffect } from "expo-router";
 import { Card, CardDescription, CardTitle } from "components/ui/card";
 import { Button } from "~/components/ui/button";
 import Feather from "@expo/vector-icons/Feather";
@@ -37,6 +37,16 @@ export default function HomeScreen() {
   const { balance, updateBalance, username } = useContext(userContext);
   const { pushAlert } = useContext(alertContext);
   const [balanceVisible, setBalanceVisible] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      updateBalance(); // Runs when the tab is selected
+
+      return () => {
+        // Cleanup if needed when navigating away
+      };
+    }, [])
+  );
 
   // Function to generate the transaction QR code
   const generateTransactionQR = async (amount: number) => {

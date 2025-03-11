@@ -53,3 +53,18 @@ export async function fetchData(
     ...(method != "GET" && { body: JSON.stringify(body) }),
   });
 }
+
+export function formatTimestamp(timestamp: number): string {
+  const dateObj = new Date(timestamp);
+
+  const options: Intl.DateTimeFormatOptions = {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false, // Use 24-hour format
+  };
+
+  return dateObj.toLocaleString("en-US", options).replace(" at", "");
+}
