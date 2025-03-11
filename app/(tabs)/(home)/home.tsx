@@ -6,6 +6,7 @@ import {
   TextInput,
   Modal,
   StyleSheet,
+  TouchableOpacity,
 } from "react-native";
 import { Link } from "expo-router";
 import { Card, CardDescription, CardTitle } from "components/ui/card";
@@ -35,27 +36,33 @@ export default function HomeScreen() {
 
   const { balance, updateBalance, username } = useContext(userContext);
   const { pushAlert } = useContext(alertContext);
+  const [balanceVisible, setBalanceVisible] = useState(false);
 
   // Function to generate the transaction QR code
-  const generateTransactionQR = (amount: number) => {
+  const generateTransactionQR = async (amount: number) => {
     const timestamp = Date.now();
 
     const transactionData = {
-      username: "riwaj.sender",
+      username: username,
       amount,
       timestamp,
       currentBalance: balance,
     };
     const transactionHash = sha256
       .create()
-      .update(JSON.stringify({ ...transactionData, seed: 2273978943 }))
+      .update(
+        JSON.stringify({
+          ...transactionData,
+          seed: await secureStoreGet("seed"),
+        })
+      )
       .hex()
       .toString();
 
     return JSON.stringify({ transactionData, transactionHash });
   };
 
-  const handleTransfer = () => {
+  const handleTransfer = async () => {
     const amount = parseFloat(transferAmount);
 
     if (!amount || amount <= 0) {
@@ -63,13 +70,13 @@ export default function HomeScreen() {
       return;
     }
 
-    // if (amount > balance) {
-    //   setError("Insufficient balance.");
-    //   return;
-    // }
+    if (amount > balance) {
+      setError("Insufficient balance.");
+      return;
+    }
 
     setTransferModalVisible(false); // Close the first modal
-    setQrData(generateTransactionQR(amount)); // Generate QR Code
+    setQrData(await generateTransactionQR(amount)); // Generate QR Code
     setTimeout(() => setQrModalVisible(true), 300); // Open QR modal after a slight delay
 
     setTransferAmount("");
@@ -123,35 +130,54 @@ export default function HomeScreen() {
               </Link>
               <CardTitle>Hi, {username}</CardTitle>
             </View>
-            <Feather name="eye" size={20} color="white" />
+            <TouchableOpacity
+              onPress={() => setBalanceVisible((prevState) => !prevState)}
+            >
+              <Feather name="eye" size={20} color="white" />
+            </TouchableOpacity>
           </View>
           <CardDescription>Current Balance</CardDescription>
-          <Text className="text-primary text-2xl">
-            ${balance.toLocaleString()}
-          </Text>
+          {balanceVisible ? (
+            <Text className="text-primary text-2xl">
+              ${balance.toLocaleString()}
+            </Text>
+          ) : (
+            <Text className="text-primary text-2xl">******</Text>
+          )}
         </Card>
 
         <View className="my-md" />
 
-                {/* Recent Transactions */}
-                <View className="space-y-md">
-                    <Text className="text-xl font-bold text-primary">Recent Transactions</Text>
-                    {[
-                        { title: "HotWheels", amount: "-$9.99", color: "text-red-400" },
-                        { title: "Pepe Pizza", amount: "-$4.50", color: "text-red-400" },
-                        { title: "Load Wallet", amount: "+$200.00", color: "text-green-400" },
-                    ].map((item, index) => (
-                        <Card key={index} className="p-md flex-row justify-between items-center bg-card rounded-lg">
-                            <Text className="text-lg text-primary">{item.title}</Text>
-                            <TouchableOpacity onPress={() => setBalanceVisible(prevState => !prevState)}>
-                                <Text className={`text-lg font-bold ${item.color}`}>
-                                    {balanceVisible ? item.amount : '***'}
-                                </Text>
-                            </TouchableOpacity>
-                        </Card>
-                    ))}
-                </View>
-            </ScrollView>
+        {/* Recent Transactions */}
+        <View className="space-y-md">
+          <Text className="text-xl font-bold text-primary">
+            Recent Transactions
+          </Text>
+          {[
+            { title: "HotWheels", amount: "-$9.99", color: "text-red-400" },
+            { title: "Pepe Pizza", amount: "-$4.50", color: "text-red-400" },
+            {
+              title: "Load Wallet",
+              amount: "+$200.00",
+              color: "text-green-400",
+            },
+          ].map((item, index) => (
+            <Card
+              key={index}
+              className="p-md flex-row justify-between items-center bg-card rounded-lg"
+            >
+              <Text className="text-lg text-primary">{item.title}</Text>
+              <TouchableOpacity
+                onPress={() => setBalanceVisible((prevState) => !prevState)}
+              >
+                <Text className={`text-lg font-bold ${item.color}`}>
+                  {balanceVisible ? item.amount : "***"}
+                </Text>
+              </TouchableOpacity>
+            </Card>
+          ))}
+        </View>
+      </ScrollView>
 
       {/* Quick Actions */}
       <View className="flex-row gap-md py-md">
