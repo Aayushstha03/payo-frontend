@@ -133,32 +133,25 @@ export default function HomeScreen() {
 
         <View className="my-md" />
 
-        {/* Recent Transactions */}
-        <View className="space-y-md">
-          <Text className="text-xl font-bold text-primary">
-            Recent Transactions
-          </Text>
-          {[
-            { title: "HotWheels", amount: "-$9.99", color: "text-red-400" },
-            { title: "Pepe Pizza", amount: "-$4.50", color: "text-red-400" },
-            {
-              title: "Load Wallet",
-              amount: "+$200.00",
-              color: "text-green-400",
-            },
-          ].map((item, index) => (
-            <Card
-              key={index}
-              className="p-md flex-row justify-between items-center bg-card rounded-lg"
-            >
-              <Text className="text-lg text-primary">{item.title}</Text>
-              <Text className={`text-lg font-bold ${item.color}`}>
-                {item.amount}
-              </Text>
-            </Card>
-          ))}
-        </View>
-      </ScrollView>
+                {/* Recent Transactions */}
+                <View className="space-y-md">
+                    <Text className="text-xl font-bold text-primary">Recent Transactions</Text>
+                    {[
+                        { title: "HotWheels", amount: "-$9.99", color: "text-red-400" },
+                        { title: "Pepe Pizza", amount: "-$4.50", color: "text-red-400" },
+                        { title: "Load Wallet", amount: "+$200.00", color: "text-green-400" },
+                    ].map((item, index) => (
+                        <Card key={index} className="p-md flex-row justify-between items-center bg-card rounded-lg">
+                            <Text className="text-lg text-primary">{item.title}</Text>
+                            <TouchableOpacity onPress={() => setBalanceVisible(prevState => !prevState)}>
+                                <Text className={`text-lg font-bold ${item.color}`}>
+                                    {balanceVisible ? item.amount : '***'}
+                                </Text>
+                            </TouchableOpacity>
+                        </Card>
+                    ))}
+                </View>
+            </ScrollView>
 
       {/* Quick Actions */}
       <View className="flex-row gap-md py-md">
