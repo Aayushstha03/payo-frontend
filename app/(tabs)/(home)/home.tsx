@@ -1,4 +1,4 @@
-import { useCallback, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { Link, useFocusEffect } from "expo-router";
+import { Link } from "expo-router";
 import { Card, CardDescription, CardTitle } from "components/ui/card";
 import { Button } from "~/components/ui/button";
 import Feather from "@expo/vector-icons/Feather";
@@ -18,6 +18,7 @@ import QRCode from "react-native-qrcode-svg";
 
 import QRScanner from "~/components/QRScanner";
 
+import CryptoJS from "crypto-js";
 import { sha256 } from "js-sha256";
 import { fetchData, getUser, secureStoreGet } from "~/lib/utils";
 import { alertContext, userContext } from "~/contexts";
@@ -38,16 +39,6 @@ export default function HomeScreen() {
   const { pushAlert } = useContext(alertContext);
   const [balanceVisible, setBalanceVisible] = useState(false);
 
-  useFocusEffect(
-    useCallback(() => {
-      updateBalance(); // Runs when the tab is selected
-
-      return () => {
-        // Cleanup if needed when navigating away
-      };
-    }, [])
-  );
-
   // Function to generate the transaction QR code
   const generateTransactionQR = async (amount: number) => {
     const timestamp = Date.now();
@@ -58,18 +49,24 @@ export default function HomeScreen() {
       timestamp,
       currentBalance: balance,
     };
-    const transactionHash = sha256
-      .create()
-      .update(
-        JSON.stringify({
-          ...transactionData,
-          seed: await secureStoreGet("seed"),
-        })
-      )
-      .hex()
-      .toString();
 
-    return JSON.stringify({ transactionData, transactionHash });
+    // Fetch the encryption key (seed)
+    const seed = await secureStoreGet("seed");
+    if (!seed) {
+      throw new Error("Encryption seed not found.");
+    }
+    const key = sha256.create().update(seed).hex().toString(); // Derive a 256-bit key from the seed
+
+    const encryptedData = CryptoJS.AES.encrypt(
+      JSON.stringify(transactionData),
+      key,
+      { mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7 }
+    ).toString();
+
+    // Generate hash of the encrypted data
+    const transactionHash = sha256.create().update(encryptedData).hex().toString();
+
+    return JSON.stringify({ encryptedData, transactionHash });
   };
 
   const handleTransfer = async () => {
