@@ -11,7 +11,7 @@ export function cn(...inputs: ClassValue[]) {
 export async function secureStoreSet(key: string, value: string) {
   try {
     await SecureStore.setItem(key, value);
-    console.log("sett");
+    console.log("sett", key, value);
   } catch (e) {
     console.log(e);
   }

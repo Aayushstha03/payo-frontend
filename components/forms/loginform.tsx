@@ -78,6 +78,8 @@ const LoginForm = () => {
       if (data?.jwt) {
         try {
           await secureStoreSet("jwt", data.jwt);
+          await secureStoreSet("seed", data.seed.toString());
+          console.log(data.seed);
 
           console.log("JWT stored in secure store");
         } catch {}
@@ -108,6 +110,7 @@ const LoginForm = () => {
           value={form.username}
           onChangeText={(value) => handleChange("username", value)}
           className="mb-xs"
+          autoCapitalize="none"
         />
         {errors.username ? (
           <Text className="text-red-500 text-xs">{errors.username}</Text>
@@ -122,6 +125,7 @@ const LoginForm = () => {
           onChangeText={(value) => handleChange("password", value)}
           secureTextEntry
           className="mb-xs"
+          autoCapitalize="none"
         />
         {errors.password ? (
           <Text className="text-red-500 text-xs">{errors.password}</Text>

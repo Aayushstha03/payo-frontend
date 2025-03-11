@@ -147,6 +147,7 @@ const RegistrationForm = () => {
           value={form.username}
           onChangeText={(value) => handleChange("username", value)}
           className="mb-xs"
+          autoCapitalize="none"
         />
         {errors.username ? (
           <Text className="text-red-500 text-xs">{errors.username}</Text>
@@ -161,6 +162,7 @@ const RegistrationForm = () => {
           onChangeText={(value) => handleChange("email", value)}
           keyboardType="email-address"
           className="mb-xs"
+          autoCapitalize="none"
         />
         {errors.email ? (
           <Text className="text-red-500 text-xs">{errors.email}</Text>
@@ -175,6 +177,7 @@ const RegistrationForm = () => {
           onChangeText={(value) => handleChange("password", value)}
           secureTextEntry
           className="mb-xs"
+          autoCapitalize="none"
         />
         {errors.password ? (
           <Text className="text-red-500 text-xs">{errors.password}</Text>

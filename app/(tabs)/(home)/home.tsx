@@ -52,19 +52,27 @@ export default function HomeScreen() {
 
     // Fetch the encryption key (seed)
     const seed = await secureStoreGet("seed");
+    console.log(seed);
+
     if (!seed) {
       throw new Error("Encryption seed not found.");
     }
     const key = sha256.create().update(seed).hex().toString(); // Derive a 256-bit key from the seed
 
-    const encryptedData = CryptoJS.AES.encrypt(
+    const encryptedData = await CryptoJS.AES.encrypt(
       JSON.stringify(transactionData),
       key,
       { mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7 }
     ).toString();
 
+    console.log(encryptedData);
+
     // Generate hash of the encrypted data
-    const transactionHash = sha256.create().update(encryptedData).hex().toString();
+    const transactionHash = sha256
+      .create()
+      .update(encryptedData)
+      .hex()
+      .toString();
 
     return JSON.stringify({ encryptedData, transactionHash });
   };
