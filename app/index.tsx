@@ -1,4 +1,5 @@
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
+import { useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 
 import Doodle from "~/components/Doodle";

@@ -1,6 +1,8 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import * as SecureStore from "expo-secure-store";
+import { jwtDecode } from "jwt-decode";
+import { base_api } from "~/constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -22,4 +24,32 @@ export async function secureStoreGet(key: string) {
 export async function isUserLoggedIn() {
   const token = await secureStoreGet("jwt");
   return token ? true : false;
+}
+
+export async function getUser() {
+  const token = await secureStoreGet("jwt");
+  if (!token) return null;
+  console.log(token);
+
+  try {
+    const user = jwtDecode(token);
+    return user;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function fetchData(
+  path: String,
+  method: string,
+  body: any = null
+) {
+  return await fetch(`${base_api}/${path}`, {
+    headers: {
+      Authorization: (await secureStoreGet("jwt")) ?? "",
+      "Content-Type": "application/json",
+    },
+    method: method,
+    ...(method != "GET" && { body: JSON.stringify(body) }),
+  });
 }

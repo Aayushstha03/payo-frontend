@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { View } from "react-native";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { secureStoreGet, secureStoreSet } from "~/lib/utils";
 import { router } from "expo-router";
+import { base_api } from "~/constants";
+import { alertContext } from "~/contexts";
 
 const RegistrationForm = () => {
+  const { pushAlert } = useContext(alertContext);
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -77,7 +80,7 @@ const RegistrationForm = () => {
     console.log("Submitting form:", form);
 
     try {
-      const response = await fetch("http://192.168.1.9:3000/create-user", {
+      const response = await fetch(`${base_api}/create-user`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -90,6 +93,11 @@ const RegistrationForm = () => {
       if (data?.seed) {
         await secureStoreSet("seed", data.seed);
         console.log("Seed stored in secure store");
+        pushAlert({
+          duration: 2000,
+          text: "Registration successful!",
+          type: "success",
+        });
         router.replace("./");
       } else {
         throw {};

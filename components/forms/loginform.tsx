@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { View } from "react-native";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { secureStoreGet, secureStoreSet } from "~/lib/utils";
 import { router } from "expo-router";
+import { base_api } from "~/constants";
+import { alertContext } from "~/contexts";
 
 const LoginForm = () => {
+  const { pushAlert } = useContext(alertContext);
+
   const [form, setForm] = useState({
     username: "",
     password: "",
@@ -77,6 +81,11 @@ const LoginForm = () => {
 
           console.log("JWT stored in secure store");
         } catch {}
+        pushAlert({
+          duration: 2000,
+          text: "Successfully logged in!",
+          type: "success",
+        });
         router.replace("./home");
       } else {
         setErrors({ ...errors, form: data.error });
