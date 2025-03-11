@@ -18,7 +18,7 @@ import QRCode from "react-native-qrcode-svg";
 
 import QRScanner from "~/components/QRScanner";
 
-import CryptoJS from "crypto-js";
+import CryptoJS from "crypto-es";
 import { sha256 } from "js-sha256";
 import { fetchData, getUser, secureStoreGet } from "~/lib/utils";
 import { alertContext, userContext } from "~/contexts";
@@ -49,7 +49,6 @@ export default function HomeScreen() {
       timestamp,
       currentBalance: balance,
     };
-
     // Fetch the encryption key (seed)
     const seed = await secureStoreGet("seed");
     console.log(seed);
@@ -64,7 +63,6 @@ export default function HomeScreen() {
       key,
       { mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7 }
     ).toString();
-
     console.log(encryptedData);
 
     // Generate hash of the encrypted data
