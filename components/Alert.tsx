@@ -40,7 +40,7 @@ function Alert({
   return (
     <Animated.View
       style={[animatedStyle]}
-      className={`absolute bottom-10 left-5 right-5 px-sm py-xs rounded-lg ${
+      className={`absolute bottom-10 left-5 right-5 px-md py-xs rounded-lg ${
         alert?.type === "success"
           ? "bg-green-600"
           : alert?.type === "error"

@@ -10,6 +10,7 @@ import { alertContext } from "~/contexts";
 
 const LoginForm = () => {
   const { pushAlert } = useContext(alertContext);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [form, setForm] = useState({
     username: "",
@@ -65,6 +66,12 @@ const LoginForm = () => {
     console.log("Submitting form:", form);
 
     try {
+      pushAlert({
+        duration: 1000,
+        text: "Logging in...",
+        type: "default",
+      });
+      setIsSubmitting(true);
       const response = await fetch(`${base_api}/login`, {
         method: "POST",
         headers: {
@@ -82,7 +89,13 @@ const LoginForm = () => {
           console.log(data.seed);
 
           console.log("JWT stored in secure store");
-        } catch {}
+        } catch {
+          pushAlert({
+            duration: 2000,
+            text: "There was an error loging in.",
+            type: "error",
+          });
+        }
         pushAlert({
           duration: 2000,
           text: "Successfully logged in!",
@@ -93,6 +106,11 @@ const LoginForm = () => {
         setErrors({ ...errors, form: data.error });
       }
     } catch (error: any) {
+      pushAlert({
+        duration: 2000,
+        text: "There was an error loging in.",
+        type: "error",
+      });
       console.error("Error submitting form:", error);
     }
   };
@@ -139,6 +157,7 @@ const LoginForm = () => {
         <Button
           onPress={handleSubmit}
           className={`mt-md w-full py-lg rounded-lg ${"bg-primary text-background"}`}
+          disabled={isSubmitting}
         >
           <Text className="text-lg font-semibold">Log In</Text>
         </Button>
