@@ -40,10 +40,22 @@ export default function UtilitiesPage() {
             <Text style={styles.utilityLabel}>Internet</Text>
           </View>
 
-          {/* Internet */}
+          {/* Recharge */}
           <View style={styles.utilityItem}>
             <MaterialIcon name="cellphone" size={40} color="gray" />
-            <Text style={styles.utilityLabel}>Internet</Text>
+            <Text style={styles.utilityLabel}>Recharge</Text>
+          </View>
+
+          {/* Telephone */}
+          <View style={styles.utilityItem}>
+            <Feather name="phone" size={40} color="gray" />
+            <Text style={styles.utilityLabel}>Telephone</Text>
+          </View>
+
+          {/* TV */}
+          <View style={styles.utilityItem}>
+            <Feather name="tv" size={40} color="gray" />
+            <Text style={styles.utilityLabel}>TV</Text>
           </View>
         </View>
       </ScrollView>
