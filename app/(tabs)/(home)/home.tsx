@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { Link } from "expo-router";
+import { Link, useFocusEffect } from "expo-router";
 import { Card, CardDescription, CardTitle } from "components/ui/card";
 import { Button } from "~/components/ui/button";
 import Feather from "@expo/vector-icons/Feather";
@@ -35,10 +35,17 @@ export default function HomeScreen() {
     "uninitiated" | "failed" | "processing"
   >("uninitiated");
 
-  const { balance, updateBalance, username } = useContext(userContext);
+  const { balance, updateBalance, username, transactions, updateTransactions } =
+    useContext(userContext);
   const { pushAlert } = useContext(alertContext);
   const [balanceVisible, setBalanceVisible] = useState(false);
 
+  useFocusEffect(
+    useCallback(() => {
+      updateBalance();
+      updateTransactions();
+    }, [])
+  );
   // Function to generate the transaction QR code
   const generateTransactionQR = async (amount: number) => {
     const timestamp = Date.now();
@@ -57,12 +64,15 @@ export default function HomeScreen() {
       throw new Error("Encryption seed not found.");
     }
     const key = sha256.create().update(seed).hex().toString(); // Derive a 256-bit key from the seed
+    console.log("seed", seed);
+    console.log("key", key);
 
-    const encryptedData = await CryptoJS.AES.encrypt(
+    const encryptedData = CryptoJS.AES.encrypt(
       JSON.stringify(transactionData),
       key,
       { mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7 }
     ).toString();
+
     console.log(encryptedData);
 
     // Generate hash of the encrypted data
@@ -72,7 +82,11 @@ export default function HomeScreen() {
       .hex()
       .toString();
 
-    return JSON.stringify({ encryptedData, transactionHash });
+    return JSON.stringify({
+      senderUsername: username,
+      encryptedData,
+      transactionHash,
+    }); //replace by phone number instead of username
   };
 
   const handleTransfer = async () => {
@@ -117,6 +131,8 @@ export default function HomeScreen() {
 
     updateBalance();
     setTransactionState("uninitiated");
+    setQrModalVisible(false);
+    setScanQrModalVisible(false);
     pushAlert({
       duration: 2000,
       text: "Transaction Successful!",
@@ -166,29 +182,36 @@ export default function HomeScreen() {
           <Text className="text-xl font-bold text-primary">
             Recent Transactions
           </Text>
-          {[
-            { title: "HotWheels", amount: "-$9.99", color: "text-red-400" },
-            { title: "Pepe Pizza", amount: "-$4.50", color: "text-red-400" },
-            {
-              title: "Load Wallet",
-              amount: "+$200.00",
-              color: "text-green-400",
-            },
-          ].map((item, index) => (
-            <Card
-              key={index}
-              className="p-md flex-row justify-between items-center bg-card rounded-lg"
-            >
-              <Text className="text-lg text-primary">{item.title}</Text>
-              <TouchableOpacity
-                onPress={() => setBalanceVisible((prevState) => !prevState)}
-              >
-                <Text className={`text-lg font-bold ${item.color}`}>
-                  {balanceVisible ? item.amount : "***"}
-                </Text>
-              </TouchableOpacity>
-            </Card>
-          ))}
+
+          {transactions && transactions.length ? (
+            transactions
+              .slice(0, Math.min(5, transactions.length))
+              .map((item: any, index: any) => (
+                <Card
+                  key={index}
+                  className="p-md mt-sm flex-row justify-between items-center bg-card rounded-lg"
+                >
+                  <Text className="text-lg text-primary">
+                    {username == item.sender ? item.receiver : item.sender}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => setBalanceVisible((prevState) => !prevState)}
+                  >
+                    <Text
+                      className={`text-lg font-bold ${
+                        username == item.sender
+                          ? "text-red-400"
+                          : "text-green-400"
+                      }`}
+                    >
+                      {balanceVisible ? item.amount : "***"}
+                    </Text>
+                  </TouchableOpacity>
+                </Card>
+              ))
+          ) : (
+            <Text className="mt-xl">No transactions yet.</Text>
+          )}
         </View>
       </ScrollView>
 

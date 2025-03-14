@@ -13,13 +13,14 @@ import {
 import { fetchData, formatTimestamp } from "~/lib/utils";
 import { userContext } from "~/contexts";
 import { useFocusEffect } from "expo-router";
+import React from "react";
 
 export default function TransactionHistory() {
+  const { transactions, updateTransactions } = useContext(userContext);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [isStartDateModalVisible, setStartDateModalVisible] = useState(false);
   const [isEndDateModalVisible, setEndDateModalVisible] = useState(false);
-  const [transactions, setTransactions] = useState([]);
 
   const { username } = useContext(userContext);
 
@@ -28,20 +29,9 @@ export default function TransactionHistory() {
     console.log("Filtering transactions from:", startDate, "to:", endDate);
   };
 
-  const updateTransactions = async () => {
-    console.log("getting trans");
-    const res = await (await fetchData("get-transactions", "GET")).json();
-    console.log(res.transactions);
-    setTransactions(res.transactions as any);
-  };
-
   useFocusEffect(
     useCallback(() => {
-      updateTransactions(); // Runs when the tab is selected
-
-      return () => {
-        // Cleanup if needed when navigating away
-      };
+      updateTransactions();
     }, [])
   );
 
@@ -52,25 +42,16 @@ export default function TransactionHistory() {
       </Text>
       {/* Date Selection Buttons */}
       <View className="flex-row justify-between my-md">
-        <Button
-          className="bg-blue-300 flex-1 mr-2"
-          onPress={() => setStartDateModalVisible(true)}
-        >
+        <Button className="bg-blue-300 flex-1 mr-2" onPress={() => {}}>
           <Text>Select Start Date</Text>
         </Button>
-        <Button
-          className="bg-blue-300 flex-1"
-          onPress={() => setEndDateModalVisible(true)}
-        >
+        <Button className="bg-blue-300 flex-1" onPress={() => {}}>
           <Text>Select End Date</Text>
         </Button>
       </View>
 
       {/* Filter Button */}
-      <Button
-        className="bg-green-300 w-full my-md"
-        onPress={filterTransactions}
-      >
+      <Button className="bg-green-300 w-full my-md" onPress={() => {}}>
         <Text>Filter Transactions</Text>
       </Button>
 
@@ -79,7 +60,7 @@ export default function TransactionHistory() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1 }}
       >
-        {transactions.map((txn: any, i) => (
+        {transactions?.map((txn: any, i: any) => (
           <Card key={i} className="mb-md">
             <CardHeader>
               <CardTitle className="text-xl">
@@ -93,9 +74,7 @@ export default function TransactionHistory() {
                 </Text>
                 <Text
                   className={`text-lg font-bold ${
-                    username == txn.sender < 0
-                      ? "text-red-400"
-                      : "text-green-400"
+                    username == txn.sender ? "text-red-400" : "text-green-400"
                   }`}
                 >
                   ${txn.amount.toFixed(2)}
@@ -104,6 +83,12 @@ export default function TransactionHistory() {
             </CardContent>
           </Card>
         ))}
+
+        {!transactions || !transactions.length ? (
+          <Text className="mt-xl">No transactions yet.</Text>
+        ) : (
+          <></>
+        )}
       </ScrollView>
 
       {/* Start Date Picker Modal */}

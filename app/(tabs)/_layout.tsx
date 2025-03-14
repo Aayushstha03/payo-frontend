@@ -7,6 +7,7 @@ import { userContext } from "~/contexts";
 export default function TabLayout() {
   const [username, setUsername] = useState(null);
   const [balance, setBalance] = useState(0);
+  const [transactions, setTransactions] = useState(null);
 
   const initializeUser = async () => {
     const user = (await getUser()) as any;
@@ -23,13 +24,33 @@ export default function TabLayout() {
     }
   };
 
+  const updateTransactions = async () => {
+    try {
+      console.log("getting trans");
+      const res = await (await fetchData("get-transactions", "GET")).json();
+      console.log(res.transactions);
+      setTransactions(res.transactions.reverse() as any);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
     initializeUser();
     updateBalance();
+    updateTransactions();
   }, []);
 
   return (
-    <userContext.Provider value={{ username, balance, updateBalance }}>
+    <userContext.Provider
+      value={{
+        username,
+        balance,
+        updateBalance,
+        transactions,
+        updateTransactions,
+      }}
+    >
       <Tabs
         screenOptions={{
           tabBarStyle: {
