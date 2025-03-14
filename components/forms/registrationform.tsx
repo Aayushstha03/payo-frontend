@@ -117,7 +117,7 @@ const RegistrationForm = () => {
         <View className="flex-1">
           <Text className="text-sm mb-xs">First Name</Text>
           <Input
-            placeholder="Enter your first name"
+            placeholder="First name"
             value={form.firstName}
             onChangeText={(value) => handleChange("firstName", value)}
             className="mb-xs max-w-full"
@@ -129,7 +129,7 @@ const RegistrationForm = () => {
         <View className="flex-1">
           <Text className="text-sm mb-xs">Last Name</Text>
           <Input
-            placeholder="Enter your last name"
+            placeholder="Last name"
             value={form.lastName}
             onChangeText={(value) => handleChange("lastName", value)}
             className="mb-xs max-w-full"

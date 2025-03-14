@@ -140,7 +140,7 @@ export default function HomeScreen() {
     });
   };
   return (
-    <View className="flex-1 bg-background px-md">
+    <View className="flex-1 bg-background px-md pt-md">
       {/* Scrollable Content */}
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -204,7 +204,7 @@ export default function HomeScreen() {
                           : "text-green-400"
                       }`}
                     >
-                      {balanceVisible ? item.amount : "***"}
+                      {balanceVisible ? "$" + String(item.amount) : "***"}
                     </Text>
                   </TouchableOpacity>
                 </Card>
@@ -277,11 +277,11 @@ export default function HomeScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Scan to Receive</Text>
-            <View className="bg-white p-xs">
-              {qrData ? <QRCode value={qrData} size={200} /> : null}
+            <View className="bg-white p-sm">
+              {qrData ? <QRCode value={qrData} size={250} /> : null}
             </View>
             <Button
-              className="bg-red-300 mt-md"
+              className="bg-red-300 mt-md w-full"
               onPress={() => setQrModalVisible(false)}
             >
               <Text>Close</Text>
@@ -311,7 +311,7 @@ export default function HomeScreen() {
                   setScanQrModalVisible(false);
                   setTransactionState("uninitiated");
                 }}
-                className="bg-red-300 mt-md"
+                className="bg-red-300 mt-md w-full"
               >
                 <Text>Close</Text>
               </Button>
@@ -331,9 +331,9 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContent: {
-    width: "80%",
+    width: "90%",
     backgroundColor: "black",
-    padding: 20,
+    padding: 12,
     borderRadius: 10,
     alignItems: "center",
   },

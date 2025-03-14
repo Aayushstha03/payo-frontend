@@ -41,7 +41,7 @@ export default function TransactionHistory() {
         Transaction History
       </Text>
       {/* Date Selection Buttons */}
-      <View className="flex-row justify-between my-md">
+      <View className="flex-row justify-between mt-md mb-sm">
         <Button className="bg-blue-300 flex-1 mr-2" onPress={() => {}}>
           <Text>Select Start Date</Text>
         </Button>
@@ -51,7 +51,7 @@ export default function TransactionHistory() {
       </View>
 
       {/* Filter Button */}
-      <Button className="bg-green-300 w-full my-md" onPress={() => {}}>
+      <Button className="bg-green-300 w-full mb-md" onPress={() => {}}>
         <Text>Filter Transactions</Text>
       </Button>
 

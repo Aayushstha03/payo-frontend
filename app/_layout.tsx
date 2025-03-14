@@ -37,7 +37,12 @@ export default function RootLayout() {
   };
   return (
     <alertContext.Provider value={{ pushAlert: pushAlert }}>
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: "black" },
+        }}
+      >
         <Stack.Screen name="index" />
         <Stack.Screen name="register" />
         <Stack.Screen name="(tabs)" />

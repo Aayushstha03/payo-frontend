@@ -53,6 +53,8 @@ export default function TabLayout() {
     >
       <Tabs
         screenOptions={{
+          animation: "shift",
+          sceneStyle: { backgroundColor: "#000000", borderColor: "black" },
           tabBarStyle: {
             backgroundColor: "#000000", // Dark background for the tab bar
             borderColor: "#000000",
